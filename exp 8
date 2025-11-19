@@ -1,0 +1,81 @@
+#include <stdio.h>
+
+struct Process {
+    int pid;
+    int arrival_time;
+    int burst_time;
+    int remaining_time;
+    int completion_time;
+    int turnaround_time;
+    int waiting_time;
+};
+
+int main() {
+    int n, time_quantum;
+    printf("Enter number of processes: ");
+    scanf("%d", &n);
+
+    struct Process p[n];
+    printf("Enter time quantum: ");
+    scanf("%d", &time_quantum);
+
+    for (int i = 0; i < n; i++) {
+        p[i].pid = i + 1;
+        printf("Enter arrival time and burst time for process %d: ", p[i].pid);
+        scanf("%d %d", &p[i].arrival_time, &p[i].burst_time);
+        p[i].remaining_time = p[i].burst_time;
+    }
+
+    int time = 0, completed = 0;
+    int queue[n], front = 0, rear = 0;
+    int visited[n];
+    for (int i = 0; i < n; i++) visited[i] = 0;
+
+    queue[rear++] = 0;
+    visited[0] = 1;
+
+    while (completed != n) {
+        int idx = queue[front++];
+        if (p[idx].remaining_time > time_quantum) {
+            time += time_quantum;
+            p[idx].remaining_time -= time_quantum;
+        } else {
+            time += p[idx].remaining_time;
+            p[idx].remaining_time = 0;
+            p[idx].completion_time = time;
+            p[idx].turnaround_time = p[idx].completion_time - p[idx].arrival_time;
+            p[idx].waiting_time = p[idx].turnaround_time - p[idx].burst_time;
+            completed++;
+        }
+
+        for (int i = 0; i < n; i++) {
+            if (p[i].arrival_time <= time && !visited[i] && p[i].remaining_time > 0) {
+                queue[rear++] = i;
+                visited[i] = 1;
+            }
+        }
+
+        if (p[idx].remaining_time > 0) {
+            queue[rear++] = idx;
+        }
+
+        if (front == rear) {
+            for (int i = 0; i < n; i++) {
+                if (p[i].remaining_time > 0) {
+                    queue[rear++] = i;
+                    visited[i] = 1;
+                    break;
+                }
+            }
+        }
+    }
+
+    printf("\nPID\tAT\tBT\tCT\tTAT\tWT\n");
+    for (int i = 0; i < n; i++) {
+        printf("%d\t%d\t%d\t%d\t%d\t%d\n",
+               p[i].pid, p[i].arrival_time, p[i].burst_time,
+               p[i].completion_time, p[i].turnaround_time, p[i].waiting_time);
+    }
+
+    return 0;
+}
