@@ -1,0 +1,87 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#define MAX_SUBDIR 5
+#define MAX_FILES 5
+#define MAX_NAME 50
+#define MAX_CONTENT 100
+
+// Structure for a file
+typedef struct {
+    char name[MAX_NAME];
+    char content[MAX_CONTENT];
+} File;
+
+// Structure for a subdirectory
+typedef struct {
+    char name[MAX_NAME];
+    File files[MAX_FILES];
+    int fileCount;
+} SubDirectory;
+
+// Structure for main directory
+typedef struct {
+    char name[MAX_NAME];
+    SubDirectory subdirs[MAX_SUBDIR];
+    int subdirCount;
+} MainDirectory;
+
+// Function to create a subdirectory
+void createSubDirectory(MainDirectory *md, char *subdirName) {
+    if (md->subdirCount >= MAX_SUBDIR) {
+        printf("Subdirectory limit reached.\n");
+        return;
+    }
+    strcpy(md->subdirs[md->subdirCount].name, subdirName);
+    md->subdirs[md->subdirCount].fileCount = 0;
+    md->subdirCount++;
+    printf("Subdirectory '%s' created.\n", subdirName);
+}
+
+// Function to add a file to a subdirectory
+void addFile(MainDirectory *md, char *subdirName, char *fileName, char *content) {
+    for (int i = 0; i < md->subdirCount; i++) {
+        if (strcmp(md->subdirs[i].name, subdirName) == 0) {
+            if (md->subdirs[i].fileCount >= MAX_FILES) {
+                printf("File limit reached in subdirectory '%s'.\n", subdirName);
+                return;
+            }
+            File *f = &md->subdirs[i].files[md->subdirs[i].fileCount];
+            strcpy(f->name, fileName);
+            strcpy(f->content, content);
+            md->subdirs[i].fileCount++;
+            printf("File '%s' added to subdirectory '%s'.\n", fileName, subdirName);
+            return;
+        }
+    }
+    printf("Subdirectory '%s' not found.\n", subdirName);
+}
+
+// Function to display the directory structure
+void displayStructure(MainDirectory *md) {
+    printf("\nMain Directory: %s\n", md->name);
+    for (int i = 0; i < md->subdirCount; i++) {
+        printf("  Subdirectory: %s\n", md->subdirs[i].name);
+        for (int j = 0; j < md->subdirs[i].fileCount; j++) {
+            printf("    File: %s - Content: %s\n", md->subdirs[i].files[j].name, md->subdirs[i].files[j].content);
+        }
+    }
+}
+
+int main() {
+    MainDirectory md;
+    strcpy(md.name, "Root");
+    md.subdirCount = 0;
+
+    createSubDirectory(&md, "Documents");
+    createSubDirectory(&md, "Images");
+
+    addFile(&md, "Documents", "resume.txt", "This is my resume.");
+    addFile(&md, "Documents", "report.txt", "Annual report content.");
+    addFile(&md, "Images", "photo.jpg", "Binary image data...");
+
+    displayStructure(&md);
+
+    return 0;
+}
