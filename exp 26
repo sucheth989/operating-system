@@ -1,0 +1,53 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include <sys/stat.h>
+
+int main() {
+    int fd;
+    char buffer[100];
+
+    // 1. Create a file
+    fd = creat("filedemo.txt", S_IRUSR | S_IWUSR);
+    if (fd == -1) {
+        perror("creat");
+        exit(1);
+    }
+    printf("File created: filedemo.txt\n");
+    close(fd);
+
+    // 2. Open file for writing
+    fd = open("filedemo.txt", O_WRONLY);
+    if (fd == -1) {
+        perror("open for write");
+        exit(1);
+    }
+    write(fd, "File Management in C\n", 22);
+    printf("Data written to file.\n");
+    close(fd);
+
+    // 3. Open file for reading
+    fd = open("filedemo.txt", O_RDONLY);
+    if (fd == -1) {
+        perror("open for read");
+        exit(1);
+    }
+    int bytes = read(fd, buffer, sizeof(buffer));
+    if (bytes == -1) {
+        perror("read");
+        exit(1);
+    }
+    printf("Data read from file:\n");
+    write(STDOUT_FILENO, buffer, bytes);
+    close(fd);
+
+    // 4. Delete the file
+    if (remove("filedemo.txt") == -1) {
+        perror("remove");
+        exit(1);
+    }
+    printf("\nFile deleted: filedemo.txt\n");
+
+    return 0;
+}
