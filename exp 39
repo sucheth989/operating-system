@@ -1,0 +1,70 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+#define MAX 100
+
+void sort(int arr[], int n) {
+    for (int i = 0; i < n - 1; i++)
+        for (int j = i + 1; j < n; j++)
+            if (arr[i] > arr[j]) {
+                int temp = arr[i];
+                arr[i] = arr[j];
+                arr[j] = temp;
+            }
+}
+
+int main() {
+    int request[MAX], n, head, disk_size;
+    int total_movement = 0;
+
+    printf("Enter number of disk I/O requests: ");
+    scanf("%d", &n);
+
+    printf("Enter request sequence:\n");
+    for (int i = 0; i < n; i++) {
+        scanf("%d", &request[i]);
+    }
+
+    printf("Enter initial head position: ");
+    scanf("%d", &head);
+
+    printf("Enter total disk size (e.g., 200): ");
+    scanf("%d", &disk_size);
+
+    request[n++] = head;
+    sort(request, n);
+
+    int pos;
+    for (int i = 0; i < n; i++) {
+        if (request[i] == head) {
+            pos = i;
+            break;
+        }
+    }
+
+    printf("\nProcessing order (C-SCAN):\n");
+
+    // Move right toward end
+    for (int i = pos; i < n; i++) {
+        printf("Move from %d to %d\n", head, request[i]);
+        total_movement += abs(request[i] - head);
+        head = request[i];
+    }
+
+    // Jump to beginning
+    if (pos > 0) {
+        printf("Jump from %d to 0\n", head);
+        total_movement += (disk_size - 1 - head);  // move to end
+        total_movement += (disk_size - 1);         // jump to start
+        head = 0;
+
+        for (int i = 0; i < pos; i++) {
+            printf("Move from %d to %d\n", head, request[i]);
+            total_movement += abs(request[i] - head);
+            head = request[i];
+        }
+    }
+
+    printf("\nTotal head movement = %d cylinders\n", total_movement);
+    return 0;
+}
