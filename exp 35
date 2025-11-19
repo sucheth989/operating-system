@@ -1,0 +1,44 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+#define MAX_BLOCKS 100
+#define MAX_INDEX  10
+
+int main() {
+    int indexBlock[MAX_INDEX];
+    int dataBlocks[MAX_INDEX];
+    int totalBlocks, i;
+
+    printf("Enter total number of blocks allocated for the file: ");
+    scanf("%d", &totalBlocks);
+
+    if (totalBlocks > MAX_INDEX) {
+        printf("Error: Maximum %d blocks allowed.\n", MAX_INDEX);
+        return 1;
+    }
+
+    printf("Enter block numbers for index block entries:\n");
+    for (i = 0; i < totalBlocks; i++) {
+        printf("Block %d: ", i);
+        scanf("%d", &indexBlock[i]);
+    }
+
+    printf("\nSimulating Indexed Allocation...\n");
+    printf("Index Block → Data Blocks\n");
+    for (i = 0; i < totalBlocks; i++) {
+        printf("Index[%d] → Block %d\n", i, indexBlock[i]);
+    }
+
+    // Simulate access to a specific block
+    int accessIndex;
+    printf("\nEnter index to access data block: ");
+    scanf("%d", &accessIndex);
+
+    if (accessIndex >= 0 && accessIndex < totalBlocks) {
+        printf("Accessed Block: %d\n", indexBlock[accessIndex]);
+    } else {
+        printf("Invalid index. Access denied.\n");
+    }
+
+    return 0;
+}
