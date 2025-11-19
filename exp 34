@@ -1,0 +1,48 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#define MAX_RECORDS 100
+#define MAX_LENGTH  50
+
+typedef struct {
+    int record_id;
+    char data[MAX_LENGTH];
+} Record;
+
+int main() {
+    Record file[MAX_RECORDS];
+    int total_records, i, search_id;
+    int found = 0;
+
+    printf("Enter number of records to store: ");
+    scanf("%d", &total_records);
+
+    // Input records sequentially
+    for (i = 0; i < total_records; i++) {
+        file[i].record_id = i + 1;
+        printf("Enter data for Record %d: ", file[i].record_id);
+        scanf(" %[^\n]", file[i].data);  // Read string with spaces
+    }
+
+    // Simulate sequential access
+    printf("\nEnter record ID to access: ");
+    scanf("%d", &search_id);
+
+    printf("\nAccessing records sequentially...\n");
+    for (i = 0; i < total_records; i++) {
+        printf("Reading Record %d: %s\n", file[i].record_id, file[i].data);
+        if (file[i].record_id == search_id) {
+            found = 1;
+            break;
+        }
+    }
+
+    if (!found) {
+        printf("Record ID %d not found.\n", search_id);
+    } else {
+        printf("\nRecord %d accessed successfully.\n", search_id);
+    }
+
+    return 0;
+}
