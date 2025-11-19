@@ -1,0 +1,65 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+#define MAX_BLOCKS 100
+
+typedef struct Block {
+    int blockNumber;
+    struct Block* next;
+} Block;
+
+typedef struct File {
+    char name[20];
+    Block* start;
+    Block* end;
+} File;
+
+Block* createBlock(int blockNumber) {
+    Block* newBlock = (Block*)malloc(sizeof(Block));
+    newBlock->blockNumber = blockNumber;
+    newBlock->next = NULL;
+    return newBlock;
+}
+
+int main() {
+    File file;
+    int totalBlocks, i, blockNum;
+
+    printf("Enter file name: ");
+    scanf("%s", file.name);
+
+    printf("Enter number of blocks to allocate: ");
+    scanf("%d", &totalBlocks);
+
+    file.start = NULL;
+    file.end = NULL;
+
+    for (i = 0; i < totalBlocks; i++) {
+        printf("Enter block number %d: ", i + 1);
+        scanf("%d", &blockNum);
+
+        Block* newBlock = createBlock(blockNum);
+
+        if (file.start == NULL) {
+            file.start = newBlock;
+            file.end = newBlock;
+        } else {
+            file.end->next = newBlock;
+            file.end = newBlock;
+        }
+    }
+
+    // Display allocation
+    printf("\nFile: %s\n", file.name);
+    printf("Linked Allocation:\n");
+    printf("Start → ");
+
+    Block* temp = file.start;
+    while (temp != NULL) {
+        printf("[Block %d] → ", temp->blockNumber);
+        temp = temp->next;
+    }
+    printf("NULL\n");
+
+    return 0;
+}
