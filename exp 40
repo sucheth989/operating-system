@@ -1,0 +1,61 @@
+#include <stdio.h>
+#include <string.h>
+
+#define READ  4  // 100
+#define WRITE 2  // 010
+#define EXEC  1  // 001
+
+typedef struct {
+    char filename[30];
+    int owner_perm;
+    int group_perm;
+    int others_perm;
+} File;
+
+void check_permission(int perm, char action) {
+    switch (action) {
+        case 'r':
+            if (perm & READ) printf("Read: Allowed\n");
+            else printf("Read: Denied\n");
+            break;
+        case 'w':
+            if (perm & WRITE) printf("Write: Allowed\n");
+            else printf("Write: Denied\n");
+            break;
+        case 'x':
+            if (perm & EXEC) printf("Execute: Allowed\n");
+            else printf("Execute: Denied\n");
+            break;
+        default:
+            printf("Invalid action.\n");
+    }
+}
+
+int main() {
+    File file;
+    char user_type;
+    char action;
+
+    // Sample file setup
+    strcpy(file.filename, "demo.txt");
+    file.owner_perm = 7;   // rwx
+    file.group_perm = 5;   // r-x
+    file.others_perm = 4;  // r--
+
+    printf("File: %s\n", file.filename);
+    printf("Enter user type (o=owner, g=group, u=others): ");
+    scanf(" %c", &user_type);
+
+    printf("Enter action (r=read, w=write, x=execute): ");
+    scanf(" %c", &action);
+
+    printf("\nPermission check:\n");
+    switch (user_type) {
+        case 'o': check_permission(file.owner_perm, action); break;
+        case 'g': check_permission(file.group_perm, action); break;
+        case 'u': check_permission(file.others_perm, action); break;
+        default: printf("Invalid user type.\n");
+    }
+
+    return 0;
+}
