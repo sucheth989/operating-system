@@ -1,0 +1,53 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include <sys/stat.h>
+
+int main() {
+    int fd;
+    char buffer[100];
+
+    // Create a file with read/write permissions
+    fd = creat("demo.txt", S_IRUSR | S_IWUSR);
+    if (fd == -1) {
+        perror("creat");
+        exit(1);
+    }
+    printf("File created: demo.txt\n");
+    close(fd);
+
+    // Open file for writing
+    fd = open("demo.txt", O_WRONLY);
+    if (fd == -1) {
+        perror("open for write");
+        exit(1);
+    }
+    write(fd, "UNIX File System Calls\n", 24);
+    printf("Data written to file.\n");
+    close(fd);
+
+    // Open file for reading
+    fd = open("demo.txt", O_RDONLY);
+    if (fd == -1) {
+        perror("open for read");
+        exit(1);
+    }
+    int bytes = read(fd, buffer, sizeof(buffer));
+    if (bytes == -1) {
+        perror("read");
+        exit(1);
+    }
+    printf("Data read from file:\n");
+    write(STDOUT_FILENO, buffer, bytes);
+    close(fd);
+
+    // Delete the file
+    if (unlink("demo.txt") == -1) {
+        perror("unlink");
+        exit(1);
+    }
+    printf("\nFile deleted: demo.txt\n");
+
+    return 0;
+}
