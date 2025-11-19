@@ -1,0 +1,49 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include <sys/stat.h>
+#include <dirent.h>
+
+int main() {
+    int fd;
+    struct stat fileStat;
+    DIR *dir;
+    struct dirent *entry;
+
+    // Open file and set non-blocking mode using fcntl
+    fd = open("demo.txt", O_RDWR | O_CREAT, 0644);
+    if (fd == -1) {
+        perror("open");
+        exit(1);
+    }
+    fcntl(fd, F_SETFL, O_NONBLOCK);
+    write(fd, "UNIX I/O demo\n", 14);
+
+    // Seek to beginning and read
+    lseek(fd, 0, SEEK_SET);
+    char buffer[100];
+    read(fd, buffer, sizeof(buffer));
+    printf("File content:\n%s\n", buffer);
+    close(fd);
+
+    // Get file info using stat
+    if (stat("demo.txt", &fileStat) == 0) {
+        printf("File Size: %ld bytes\n", fileStat.st_size);
+        printf("Last Access: %ld\n", fileStat.st_atime);
+    }
+
+    // Open current directory and list files
+    dir = opendir(".");
+    if (dir == NULL) {
+        perror("opendir");
+        exit(1);
+    }
+    printf("Directory contents:\n");
+    while ((entry = readdir(dir)) != NULL) {
+        printf("%s\n", entry->d_name);
+    }
+    closedir(dir);
+
+    return 0;
+}
