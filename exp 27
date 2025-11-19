@@ -1,0 +1,33 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <dirent.h>
+#include <string.h>
+
+int main(int argc, char *argv[]) {
+    DIR *dir;
+    struct dirent *entry;
+    char *path;
+
+    // Use current directory if no argument is given
+    if (argc < 2) {
+        path = ".";
+    } else {
+        path = argv[1];
+    }
+
+    dir = opendir(path);
+    if (dir == NULL) {
+        perror("Unable to open directory");
+        return EXIT_FAILURE;
+    }
+
+    while ((entry = readdir(dir)) != NULL) {
+        // Skip hidden files (those starting with '.')
+        if (entry->d_name[0] != '.') {
+            printf("%s\n", entry->d_name);
+        }
+    }
+
+    closedir(dir);
+    return EXIT_SUCCESS;
+}
